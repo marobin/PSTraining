@@ -1,0 +1,65 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>adsisearcher</Title>
+                <Description>Exemple d&apos;utilisation de l&apos;accélérateur adsisearcher pour trouver des objets dans l&apos;AD</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[<#
+Logical Operators
+
+
+= (Equal to)
+~= (Approximately equal to)
+<= (Lexicographically less than or equal to)
+>= (Lexicographically greater than or equal to)
+& (AND)
+| (OR)
+! (NOT)
+
+
+
+Filters on objectCategory and objectClass
+
+objectCategory         objectClass           Result
+person                 user                  user objects
+person                                       user and contact objects
+person                 contact               contact objects
+                       user                  user and computer objects
+computer                                     computer objects
+user                                         user and contact objects
+                       contact               contact objects
+                       computer              computer objects
+                       person                user, computer, and contact objects
+contact                                      user and contact objects
+group                                        group objects
+                       group                 group objects
+person                 organizationalPerson  user and contact objects
+                       organizationalPerson  user, computer, and contact objects
+organizationalPerson                         user and contact objects
+
+
+
+http://www.lazywinadmin.com/2013/10/powershell-get-domainuser.html
+#>
+
+$UserName = $env:USERNAME
+$User = ([adsisearcher]"(displayname=$UserName)").FindOne()
+$User.Properties
+
+$ComputerName = $env:COMPUTERNAME
+$Computer = ([adsisearcher]"(&(objectcategory=computer)(CN=$ComputerName))").FindOne()
+$Computer.Properties]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

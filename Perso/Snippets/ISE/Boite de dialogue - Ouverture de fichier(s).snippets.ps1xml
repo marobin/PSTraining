@@ -1,0 +1,33 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Boite de dialogue - Ouverture de fichier(s)</Title>
+                <Description>Exemple d&apos;utilisation d&apos;une boite de dialogue d&apos;ouverture de fichier</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Add-Type -AssemblyName System.Windows.Forms
+
+$OpenFileDialog = [Windows.Forms.OpenFileDialog]::new() # Création d'une nouvelle boite de dialogue
+$OpenFileDialog.Filter = 'Fichiers texte (*.txt)|*.txt|Tous les fichiers (*.*)|*.*' # Filtre sur le type de fichiers
+$OpenFileDialog.Multiselect = $true # Multiselection 
+$OpenFileDialog.InitialDirectory = $PSScriptRoot # Dossier dans lequel s'ouvre la boite de dialogue
+$OpenFileDialog.Title = 'Sélection personnalisée' # Titre de la boite de dialogue
+$DialogResult = $OpenFileDialog.ShowDialog() # Ouverture de la boite de dialogue
+If ($DialogResult -eq 'OK')
+{
+    # Si des fichiers ont été sélectionnés, on affiche leur chemin
+    $OpenFileDialog.FileNames
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

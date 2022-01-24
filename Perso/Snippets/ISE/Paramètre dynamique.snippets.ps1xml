@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Paramètre dynamique</Title>
+                <Description>Exemple de création d&apos;un paramètre dynamique pour une cmdlet</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[DynamicParam
+{          
+    $ParamAttrib  = New-Object -TypeName System.Management.Automation.ParameterAttribute
+    $ParamAttrib.Mandatory  = $true # Paramètre obligatoire
+    $ParamAttrib.ValueFromPipeline = $true # Récupérer l'objet par valeur via le pipeline
+    $ParamAttrib.ValueFromPipelineByPropertyName = $true # Récupérer l'objet par nom de propriété via le pipeline
+    $ParamAttrib.ParameterSetName  = '__AllParameterSets' # Nom du ParameterSet
+    $AttribColl = New-Object  -TypeName System.Collections.ObjectModel.Collection[System.Attribute]
+    $AttribColl.Add($ParamAttrib)
+    $Value = "INSERER ICI UNE FONCTION QUI PERMET D'AVOIR LA LISTE DES VALEURS POSSIBLES POUR LE PARAMETRE DYNAMIQUE"
+    $AttribColl.Add((New-Object  -TypeName System.Management.Automation.ValidateSetAttribute -ArgumentList ($Value)))
+    $RuntimeParam = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter -ArgumentList ('NomParametre', [TypeParametre], $AttribColl)
+    $RuntimeParamDic = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameterDictionary
+    $RuntimeParamDic.Add('NomParametre',  $RuntimeParam)
+    return  $RuntimeParamDic
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

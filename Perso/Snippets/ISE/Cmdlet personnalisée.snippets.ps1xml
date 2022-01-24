@@ -1,0 +1,85 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Cmdlet personnalisée</Title>
+                <Description>Définition d&apos;une Cmdlet personnalisée</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Function Verb-Noun 
+{
+<#
+.Synopsis
+   Description simple
+
+.DESCRIPTION
+   Description détaillée
+
+   /!\ATTENTION/!\ Cette fonction est en phase de test.
+
+.PARAMETER ComputerName
+    Description du paramètre ComputerName et de sa fonction.    
+.PARAMETER UserName
+
+.PARAMETER Quiet
+
+.EXAMPLE
+   PS C:> 
+
+.NOTES
+    AUTEUR : 
+    CRÉATION : 
+    VERSION : 1.0
+    MODIFICATIONS : Date (version)
+                        - Modification 1
+                        - Modification 2
+#>
+    [CmdletBinding(DefaultParameterSetName='ByComputer', 
+                  SupportsShouldProcess,
+                  ConfirmImpact='Medium')]
+    param (
+        [Parameter(ValueFromPipeline,
+                   ValueFromPipelineByPropertyName,
+                   ParameterSetName='ByComputer')]
+        [Alias('Hostname','CN','Server','__Server','PSComputerName')]
+        [String[]]$ComputerName = @($env:COMPUTERNAME),
+
+        [Parameter(Mandatory,
+                   ValueFromPipeline,
+                   ValueFromPipelineByPropertyName,
+                   HelpMessage="Nom d'utilisateur.")]
+        [Alias('SamAccountName','SN')]
+        [String]$UserName,
+
+        [Switch]$Quiet
+    )
+
+
+    BEGIN
+    {
+        Write-Verbose -Message "[$($MyInvocation.MyCommand.Name)] Début de fonction"
+        Write-Warning -Message "[$($MyInvocation.MyCommand.Name)] /!\ATTENTION/!\ Cette fonction est en phase de test."
+ 
+    } # BEGIN
+    PROCESS
+    {
+        Write-Verbose -Message "[$($MyInvocation.MyCommand.Name)] PROCESS"
+
+    } # PROCESS
+    END
+    {
+        Write-Verbose -Message "[$($MyInvocation.MyCommand.Name)] Fin de fonction"
+    } # END
+} # Function]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

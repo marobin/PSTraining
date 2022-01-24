@@ -1,0 +1,41 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Empêcher la désinstallation via le panneau de configuration</Title>
+                <Description>Permet d&apos;empêcher la désinstallation d&apos;une application via le panneau de configuration.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[# Pour lister les applications installées en contexte utilisateur il faut auparavant charger toutes les ruches pour que ce code liste toutes les applications.
+$UninstallKeyList = @("HKLM:\software\Microsoft\Windows\CurrentVersion\Uninstall",
+                      "HKLM:\software\wow6432node\Microsoft\Windows\CurrentVersion\Uninstall",
+                      "Registry::hkey_users\*\software\Microsoft\Windows\CurrentVersion\Uninstall",
+                      "Registry::hkey_users\*\software\wow6432node\Microsoft\Windows\CurrentVersion\Uninstall")
+Get-ChildItem -Path $UninstallKeyList -ErrorAction Ignore | 
+Select-Object -ExpandProperty Name |
+ForEach-Object {
+    $ID = Split-Path -Path $_ -Leaf
+    $KeyPath = "Registry::$(Split-Path -Path $_ -Parent)"
+    $DisplayName = (Get-ItemProperty -Path "$KeyPath\$ID" -Name "DisplayName" -ErrorAction Ignore).DisplayName
+    If (![String]::IsNullOrWhiteSpace($DisplayName) -and ($DisplayName -eq ""))
+    {
+		$null = New-ItemProperty -Path "$KeyPath\$_" -Name "NoModify" -PropertyType DWORD -Value 1 -Force
+		$null = New-ItemProperty -Path "$KeyPath\$_" -Name "NoRepair" -PropertyType DWORD -Value 1 -Force
+		$null = New-ItemProperty -Path "$KeyPath\$_" -Name "NoRemove" -PropertyType DWORD -Value 1 -Force
+
+        # OU pour la maquette
+        #Disable-UserSuppressOrModifyApp -prodID $_
+    }
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

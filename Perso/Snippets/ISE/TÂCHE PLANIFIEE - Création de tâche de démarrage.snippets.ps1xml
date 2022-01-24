@@ -1,0 +1,69 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>TÂCHE PLANIFIEE - Création de tâche de démarrage</Title>
+                <Description>Exemple de code pour créer une tâche planifiée qui sera lancée au démarrage de l&apos;ordinateur en contexte Système.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$ComputerName = $env:COMPUTERNAME
+$TaskName = ''
+$TaskDescr = ''
+$PSExe = "$pshome\powershell.exe"
+$Command = "Import-Module `"Test`" -Force; Test -Verbose"
+$Arguments = "-NoExit -WindowStyle Hidden -NonInteractive -Executionpolicy unrestricted -Command `"$Command`""
+    
+    
+$User = [Security.Principal.WindowsIdentity]::GetCurrent()
+$service = New-Object -ComObject 'Schedule.Service'
+# connect to the local machine. 
+# http://msdn.microsoft.com/en-us/library/windows/desktop/aa381833(v=vs.85).aspx
+$service.Connect($ComputerName) # Laisser $ComputerName vide pour se connecter à l'ordinateur local
+$rootFolder = $service.GetFolder('\AMODIFIER')
+    
+$TaskDefinition = $service.NewTask(0)
+$TaskDefinition.RegistrationInfo.Description = $TaskDescr
+$TaskDefinition.RegistrationInfo.Author = $User.Name
+$TaskDefinition.Principal.GroupId = 'TEST\Admin'
+$TaskDefinition.Settings.Enabled = $true # Activer la tâche
+$TaskDefinition.Settings.AllowDemandStart = $true # Permettre le lancement de la tâche à la demande
+$TaskDefinition.Settings.DisallowStartIfOnBatteries = $false # Désactive le lancement de la tâche si sur batterie
+$TaskDefinition.Settings.RunOnlyIfNetworkAvailable = $false # Lance la tâche seulement si réseau disponible
+$TaskDefinition.Settings.StopIfGoingOnBatteries = $false # Stop la tâche si sur batterie
+$TaskDefinition.Settings.WakeToRun = $true # Sortir l'ordinateur de la veille
+$TaskDefinition.Settings.StartWhenAvailable = $true # Exécuter la tâche dès que possible
+$TaskDefinition.Settings.RestartInterval = 'PT1M' # 1minute
+$TaskDefinition.Settings.RestartCount = 10 # Nombre d'essais en cas d'erreur
+$TaskDefinition.Settings.MultipleInstances = 2 # Ne pas démarrer une nouvelle instance
+$TaskDefinition.Principal.RunLevel = 1 # Exécuter avec les autorisations maximales
+    
+$triggers = $TaskDefinition.Triggers
+$trigger = $triggers.Create(8) # Se déclenche au démarrage
+$trigger.Enabled = $true
+    
+# http://msdn.microsoft.com/en-us/library/windows/desktop/aa381841(v=vs.85).aspx
+$Action = $TaskDefinition.Actions.Create(0)
+$action.Path = $PSExe
+$action.Arguments = $Arguments
+    
+#http://msdn.microsoft.com/en-us/library/windows/desktop/aa381365(v=vs.85).aspx
+$Task = $rootFolder.RegisterTaskDefinition($TaskName,
+                                            $TaskDefinition,
+                                            2,
+                                            'AUTORITE NT\Système',
+                                            $null,
+                                            5)
+# Lancement de la tâche
+$Task.Run($null)]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

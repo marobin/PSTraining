@@ -1,0 +1,31 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>SYSTEME DE FICHIERS - Suppression d&apos;un dossier</Title>
+                <Description>Exemple de suppression d&apos;un dossier.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$Path = ""
+Do
+{
+    $Error.Clear()
+    If ((Test-Path -Path $Path))
+    {
+        Get-ChildItem -Path $Path -File -Recurse | Remove-Item -Force
+        Remove-Item -Path $Path -Recurse -Force
+    }
+    Start-Sleep -Seconds 5
+}While ($Error)]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

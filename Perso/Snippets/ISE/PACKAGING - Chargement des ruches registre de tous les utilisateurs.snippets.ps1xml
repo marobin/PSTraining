@@ -1,0 +1,87 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Chargement des ruches registre de tous les utilisateurs</Title>
+                <Description>Routine de modification du registre pour tous les utilisateurs d&apos;un poste</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[################################## Routine de modification de clés de registre pour tous les profils utilisateurs ##################################
+$ProfileExclusion = @('Public','defaultuser0','SVC_PSRepository')
+# Chargement des ruches utilisateurs
+Get-ChildItem -Path "$env:SystemDrive\Users" -Exclude $ProfileExclusion -Force -Directory |
+Where-Object {$_.Attributes -NotMatch 'System|ReparsePoint|NotContentIndexed'} |
+Select-Object -Property Name,FullName |
+ForEach-Object {
+    $AccountName = $_.Name
+    Write-Verbose -Message "AccountName : $AccountName"
+    
+    # Chargement de la ruche utilisateur
+    If (Test-Path -Path "$($_.FullName)\NTUser.dat")
+    {
+        If ($accountName -eq 'Default')
+        {
+            $AccountName = 'TempDEFAULT'
+        }
+    
+        $HiveRoot = "HKEY_USERS\$AccountName"
+
+        $Return = Invoke-Executable -Command 'reg.exe' -Arguments "load $HiveRoot `"$($_.FullName)\NTUser.dat`"" -WindowStyle Hidden
+        If ($Return.ExitCode -eq 0)
+        {
+            Write-Log -Message "Chargement de la ruche utilisateur pour $AccountName"
+            $IsConnected = $false
+        }
+        Else
+        {
+            # Si le chargement de la ruche a échoué cela signifie que l'utilisateur est déjà connecté
+            $IsConnected = $true
+            Write-Log -Message "Utilisateur connecté : $AccountName"
+            $AccountName = Get-ChildItem -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList' | 
+                            Where-Object {$_.GetValue('ProfileImagePath') -match "\\$AccountName\b"} | 
+                            Select-Object -ExpandProperty Name -First 1 | 
+                            Split-Path -Leaf
+
+            Write-Verbose -Message "AccountName : $AccountName"
+            Write-Log -Message "SID de l'utilisateur : $AccountName"
+        }
+			
+		########## DEBUT Action sur les clés de registre #################
+		ForEach ($Key in @())
+		{
+			$KeyPath = "Registry::HKEY_USERS\$AccountName\$Key"
+			If (Test-Path -Path $KeyPath)
+			{
+				Remove-Item -Path $KeyPath -Recurse -Force
+				Write-Log -Message "Suppression de la clé `"$KeyPath`""
+			}
+		}
+		########## FIN action sur les clés de registre ###################
+		
+		
+        If ($IsConnected -eq $false)
+        {
+            # Sauvegarde de la ruche pour la décharger à la fin de la suppression des clés
+            (Get-Item -Path "Registry::HKEY_USERS\$AccountName").Handle.Close()
+            # Suppression des références de pointeurs inutiles dans la mémoire une fois la ruche fermée
+            [gc]::Collect()
+            $Error.Clear()
+            $null = Invoke-Executable -Command 'reg.exe' -Arguments "unload $HiveRoot" -WindowStyle Hidden
+            Write-Log -Message "Déchargement de la ruche utilisateur $HiveRoot" 
+        }
+    }
+}
+############################# Fin de routine de modification de clés de registre pour tous les profils utilisateurs ################################
+]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

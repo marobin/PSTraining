@@ -1,0 +1,31 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Boite de dialogue - Choisir un dossier</Title>
+                <Description>Exemple d&apos;utilisation d&apos;une boite de dialogue de sélection de dossier</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[# https://msdn.microsoft.com/fr-fr/library/system.windows.forms.folderbrowserdialog(v=vs.110).aspx
+Add-Type -AssemblyName System.Windows.Forms
+$FolderBrowserDialog = [Windows.Forms.FolderBrowserDialog]::new() # Création d'une nouvelle boite de dialogue
+$FolderBrowserDialog.Description = 'Choisir un dossier' # Description de la boite de dialogue
+#$FolderBrowserDialog.RootFolder = [System.Environment+SpecialFolder]::MyDocuments # Chemin racine
+$FolderBrowserDialog.ShowNewFolderButton = $true # Affiche ou non le bouton "Nouveau dossier"
+$DialogResult = $FolderBrowserDialog.ShowDialog() # Ouvre la boite de dialogue
+If ($DialogResult -eq 'OK')
+{
+    $FolderBrowserDialog.SelectedPath
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

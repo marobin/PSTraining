@@ -1,0 +1,64 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Décompression archive</Title>
+                <Description>Décompression d&apos;une archive dans la maquette PowerShell.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[# Decompression du fichier ZIP
+$Source_ZIP = ""
+$ProgPath = ""
+
+If ($BitVersion -eq 64)
+{
+	$7zKeyPath = "$SoftwareKeyPathx64\7-Zip"
+}
+Else
+{
+	$7zKeyPath = "$SoftwareKeyPathx86\7-Zip"
+}
+
+Try
+{
+    $7zPath = (Get-ItemProperty -Path "HKLM:\$7zKeyPath" -Name 'Path' -ErrorAction Stop).Path
+}
+Catch
+{
+    $Error.Clear()
+    $7zPath = ''
+}
+
+Try
+{
+	Write-Log -Message "Début Décompression du fichier `"$Source_ZIP`" par Expand-Archive"
+    Expand-Archive -Path $Source_ZIP -DestinationPath $ProgPath -Force -Verbose -ErrorAction Stop
+	Write-Log -Message "Fin Décompression du fichier ZIP par Expand-Archive."
+}
+Catch
+{
+    $Message = $_.Exception.Message
+    $Error.Clear()
+    Write-Log -Message "Erreur décompression avec Expand-Archive : $Message"
+    If (![String]::IsNullOrWhiteSpace($7zPath))
+    {
+	    $strPath7zip = "$7zPath\7z.exe" -replace '\b\\\\+','\'
+	    Write-Log -Message "Début Décompression du fichier `"$Source_ZIP`" par 7-Zip"
+	    $Arguments = "x `"$Source_ZIP`" -o `"$ProgPath`" -y"
+	    $Return = Invoke-Executable -Command "`"$strPath7zip`"" -Arguments $Arguments
+	    $ErrNumber = $Return.ExitCode
+	    $ErrMsg = $Return.StdErr
+	    Write-Log -Message "Fin Décompression du fichier ZIP par 7-Zip."
+    }
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>

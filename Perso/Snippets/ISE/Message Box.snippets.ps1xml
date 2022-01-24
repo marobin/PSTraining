@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Message Box</Title>
+                <Description>Exemple d&apos;utilisation du framework .NET pour la création d&apos;une MessageBox</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Add-Type -AssemblyName System.Windows.Forms$Message = ""$RetVal = [Windows.Forms.MessageBox]::Show($Message, `                                           'Titre',`                                           [Windows.Forms.MessageBoxButtons]::OK,`                                           [Windows.Forms.MessageBoxIcon]::Information)                                           ]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

@@ -1,0 +1,29 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Nouveau raccourci</Title>
+                <Description>Exemple de création d&apos;un raccourci</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$IconName = '' # Nom de l'icône
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$env:PUBLIC\Desktop\$IconName.lnk") # Emplacement du raccourci
+$Shortcut.IconLocation = "" # Chemin de l'icône du raccourci
+$Shortcut.WorkingDirectory = $PSHOME 
+$Shortcut.WindowStyle = 7 # Réduit
+$Shortcut.TargetPath = "$PSHOME\powershell.exe" # Executable ou lien
+$Shortcut.Arguments = "-NoProfile -NoLogo -NonInteractive -WindowStyle Hidden -Command `"`"" # Arguments de l'exécutable
+$Shortcut.Save() # Sauvegarde du raccourci]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

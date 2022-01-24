@@ -1,0 +1,43 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Registre distant</Title>
+                <Description>Exemple d&apos;utilisation du registre à distance</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Try
+{
+    Write-Verbose -Message "Création d'un objet registre pour l'ordinateur $ComputerName"
+    $Registry=[Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,$ComputerName)
+    $subKey = 'SOFTWARE\7-Zip'
+    Write-Verbose -Message "Ouverture de la sous-clé $subKey"
+    $baseKey = $registry.OpenSubKey($subKey)
+    $Value = $baseKey.GetValue('Path')
+}
+Catch
+{
+    Write-Error -Message "[$($MyInvocation.MyCommand.Name)] Impossible de se connecter à l'ordinateur $ComputerName. Vérifier que ce dernier existe et est en ligne." `                -Exception $_.Exception `
+                -Category $_.CategoryInfo.Category `                -CategoryReason $_.categoryInfo.Reason
+}
+Finally
+{
+    # Suppression de l'objet registre en mémoire
+    If ($Registry)
+    {
+        $Registry.Dispose()
+        $Registry = $null
+    }
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

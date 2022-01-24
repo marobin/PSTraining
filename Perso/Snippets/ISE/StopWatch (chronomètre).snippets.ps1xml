@@ -1,0 +1,45 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>StopWatch (chronomètre)</Title>
+                <Description>Exemple d&apos;utilisation d&apos;un chronomètre</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[# Nouvel objet chronomètre
+$sw = New-Object System.Diagnostics.Stopwatch
+$sw.Start()
+#$sw.Reset()
+#$sw.Restart()
+
+$flag = $true
+$Seconds = 15
+# Pendant 3 minutes
+While($sw.Elapsed.Minutes -lt 3)
+{
+    If ($flag -and ($sw.Elapsed.Seconds) -and (-not ($sw.Elapsed.Seconds % $Seconds)))
+    {
+        # Affiche les minutes et les secondes (mm:ss) toutes les $Seconds secondes (ici, 15 secondes)
+        "$($sw.Elapsed.Minutes):$($sw.Elapsed.Seconds)"
+        # Flag pour ne passer qu'une fois dans la condition
+        $flag = $false
+    }
+    ElseIf (($sw.Elapsed.Seconds) -and ($sw.Elapsed.Seconds % $Seconds))
+    {
+        # Remise à True du flag pour pouvoir repasser la condition
+        $flag = $true
+    }
+}
+$sw.Stop()]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

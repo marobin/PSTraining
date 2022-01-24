@@ -1,0 +1,34 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Session CIM</Title>
+                <Description>Création d&apos;une nouvelle session CIM avec un ordinateur</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Try
+{
+    Write-Verbose -Message "Création d'un session CIM avec l'ordinateur $ComputerName"
+    $CimSession = New-CimSession -ComputerName $ComputerName
+}
+Catch
+{
+    Write-Error -Message "Impossible de créer une session CIM avec l'ordinateur $ComputerName. Vérifier qu'il existe et qu'il est en ligne." `                -Exception $_.Exception `
+                -Category $_.CategoryInfo.Category `
+                -CategoryReason $_.CategoryInfo.Reason
+    Return
+}
+
+Remove-CimSession -CimSession $CimSession]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

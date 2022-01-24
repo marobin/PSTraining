@@ -1,0 +1,32 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>REGISTRE - Suppression de valeur</Title>
+                <Description>Suppression d&apos;une valeur dans une clé de registre</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Try
+{
+    If (Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\$Key" -Name 'ValueName' -ErrorAction Stop)
+    {
+        $null = Remove-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\$Key" -Name 'ValueName' -Force
+    }
+}
+Catch [System.Management.Automation.ItemNotFoundException],[System.Management.Automation.PSArgumentException]
+{
+	# Valeur non présente
+    $Error.Clear()
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

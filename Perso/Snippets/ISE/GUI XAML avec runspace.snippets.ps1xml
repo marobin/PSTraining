@@ -1,0 +1,138 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>XAML GUI avec runspace</Title>
+                <Description>Exemple de création d&apos;un GUI avec le modèle XAML et des runspaces</Description>
+                <Shortcut></Shortcut> 
+                <Keywords>editor,console</Keywords>
+                <Author>Marc-Antoine ROBIN</Author>
+                <DifficultyLevel>1</DifficultyLevel>
+                <Example>False</Example>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+                <Requirements>
+                    <MinimumPowerShellVersion>1</MinimumPowerShellVersion>
+                    <RequiredModules></RequiredModules>
+                    <AdminPrivileges>False</AdminPrivileges>
+                    <ProcessorArchitecture>x64</ProcessorArchitecture>
+                </Requirements>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='4525'>
+                    <![CDATA[#region Instanciation des collection synchronisées
+$runspace = [hashtable]::Synchronized(@{})
+$SyncHash = [hashtable]::Synchronized(@{})
+$jobCleanup = [hashtable]::Synchronized(@{})
+$jobs = [collections.arraylist]::Synchronized([collections.arraylist]@())
+$collection = [hashtable]::Synchronized(@{})
+#endregion Instanciation des collection synchronisées
+
+#region Définition des collections synchronisées si besoin
+$collection.ObservableCollection = New-Object -TypeName System.Collections.ObjectModel.ObservableCollection[object]
+$jobCleanup.Flag = $True
+#endregion Définition des collections synchronisées si besoin
+
+#region Création du runspace graphique
+$runspace.Runspace =[runspacefactory]::CreateRunspace()
+$runspace.Runspace.ApartmentState = 'STA'         
+$runspace.Runspace.Open()         
+$runspace.Runspace.SessionStateProxy.SetVariable('runspace',$runspace)     
+$runspace.Runspace.SessionStateProxy.SetVariable('SyncHash',$SyncHash) 
+$runspace.Runspace.SessionStateProxy.SetVariable('jobCleanup',$jobCleanup)     
+$runspace.Runspace.SessionStateProxy.SetVariable('jobs',$jobs) 
+$runspace.Runspace.SessionStateProxy.SetVariable('collection',$collection)     
+$runspace.PowerShell = [powershell]::Create().AddScript({
+    $SyncHash.Error = $Error
+    #region Construction du GUI
+    $PlainXaml = @"
+<COPIER ICI LE CODE XML ISSU DE VISUAL STUDIO>
+<Attention à ne pas laisser d'espace entre le code et le bord de l'éditeur>
+"@
+
+    $null = Add-Type -AssemblyName presentationframework
+    # Remplace les chaines de caractères ajoutées par Visual Studio causant des erreurs avec Powershell
+    [xml]$xaml = $PlainXaml -replace 'mc:Ignorable="d"','' -replace 'x:N','N' -replace '^<Win.*', '<Window'
+
+    #endregion Construction du GUI
+
+    #region Runspace pour nettoyer les tâches
+    $newRunspace =[runspacefactory]::CreateRunspace()
+    $newRunspace.ApartmentState = 'STA'        
+    $newRunspace.Open()         
+    $newRunspace.SessionStateProxy.SetVariable('jobCleanup',$jobCleanup)     
+    $newRunspace.SessionStateProxy.SetVariable('jobs',$jobs) 
+    $newRunspace.SessionStateProxy.SetVariable('SyncHash',$SyncHash) 
+    $jobCleanup.PowerShell = [PowerShell]::Create().AddScript({
+        # Routine pour gérer les tâches terminées
+        Do {    
+            [Threading.Monitor]::Enter($Jobs.syncroot)
+            Foreach($runspace in $jobs) {
+                If ($runspace.Handle.isCompleted) {
+                    $null = $runspace.powershell.EndInvoke($runspace.Handle)
+                    $runspace.powershell.dispose()
+                    $runspace.Handle = $null
+                    $runspace.powershell = $null               
+                } 
+            }
+            # Nettoyage des runspaces non utilisés
+            $temphash = $jobs.clone()
+            $temphash | Where-Object {
+                $_.runspace -eq $Null
+            } | ForEach-Object {
+                $jobs.remove($_)
+            }        
+            [Threading.Monitor]::Exit($Jobs.syncroot)
+            Start-Sleep -Seconds 1     
+        } while ($jobCleanup.Flag)
+    })
+    $jobCleanup.PowerShell.Runspace = $newRunspace
+    $jobCleanup.Thread = $jobCleanup.PowerShell.BeginInvoke()  
+    #endregion Runspace pour nettoyer les tâches
+
+    #region Connection des contrôles
+    $reader = New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $xaml
+    $SyncHash.Window = [Windows.Markup.XamlReader]::Load( $reader )
+    # Définition de tous les contrôles présents dans la fênetre de la forme $SyncHash.Controle
+    $xaml.SelectNodes('//*[@Name]') | ForEach-Object {$SyncHash.$($_.Name) = $SyncHash.Window.FindName($_.Name)}
+    #endregion Connection des contrôles
+
+    #region Evenements UI
+    
+    # Evenement ouverture de la form
+    $SyncHash.Window.Add_Loaded({
+
+    })
+    
+    # Evenement fermeture de la fenêtre
+    $SyncHash.Window.Add_Closed({
+        # Halt job processing
+        $jobCleanup.Flag = $False
+
+        # Stop all runspaces
+        $jobCleanup.PowerShell.Dispose()
+    
+        $runspace.PowerShell.Runspace.Close()
+        $runspace.PowerShell.Dispose()
+        
+        # Suppression des variables créées
+        $xaml.SelectNodes('//*[@Name]') | ForEach-Object {$SyncHash.Remove($_.Name)}
+        
+        [gc]::Collect()
+        [gc]::WaitForPendingFinalizers()
+    })
+    
+    #endregion Evenements UI
+
+    # Ouverture de la fenêtre
+    $null = $SyncHash.Window.ShowDialog()
+})
+$runspace.PowerShell.Runspace = $runspace.Runspace
+$runspace.Handle = $runspace.PowerShell.BeginInvoke()]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>

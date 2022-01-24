@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Nouveau raccourci</Title>
+                <Description>Exemple de création de nouveau raccourci sur le bureau public.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[#$AllUserDesktop = "$env:PUBLIC\Desktop"
+$IconName = '' # Nom de l'icône
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$AllUserDesktop\$IconName.lnk") # Emplacement du raccourci
+$Shortcut.TargetPath = "" # Executable ou lien
+$Shortcut.WorkingDirectory = '' 
+$Shortcut.IconLocation = "" # Chemin de l'icône du raccourci
+$Shortcut.WindowStyle = 1
+$Shortcut.Arguments = "" # Arguments de l'exécutable
+$Shortcut.Save() # Sauvegarde du raccourci]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

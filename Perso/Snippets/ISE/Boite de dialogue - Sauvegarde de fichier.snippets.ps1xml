@@ -1,0 +1,34 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Boite de dialogue - Sauvegarde de fichier</Title>
+                <Description>Exemple d&apos;utilisation d&apos;une boite de dialogue de sauvegarde de fichier</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Add-Type -AssemblyName System.Windows.Forms
+
+# https://msdn.microsoft.com/fr-fr/library/system.windows.forms.savefiledialog(v=vs.110).aspx
+$SaveFileDialog = [Windows.Forms.SaveFileDialog]::new() # Création d'une nouvelle boite de dialogue
+$SaveFileDialog.InitialDirectory = $PSScriptRoot # Dossier dans lequel s'ouvre la boite de dialogue
+$SaveFileDialog.OverwritePrompt = $true # Affiche l'avertissement en cas de fichier déjà existant
+$SaveFileDialog.Filter = "Fichiers texte (*.txt)|*.txt|Tous les fichiers (*.*)|*.*" # Filtre sur le type de fichiers
+$SaveFileDialog.Title = "Sauvegarde d'un fichier" # Titre de la boite de dialogue
+$DialogResult = $SaveFileDialog.ShowDialog() # Ouverture de la boite de dialogue
+If ($DialogResult -eq 'OK')
+{
+    # Si des fichiers ont été sélectionnés, on affiche leur chemin
+    $SaveFileDialog.FileNames
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

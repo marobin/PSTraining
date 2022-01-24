@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Enregistrement fichier en UTF-8 sans BOM.</Title>
+                <Description>Permet d&apos;enregistrer un fichier en UTF-8 sans BOM comme encodage.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$FilePath = ''
+$Content = Get-Content -Path ''
+
+[System.IO.File]::WriteAllLines($FilePath, $Content, [System.Text.UTF8Encoding]($False)) # Obligatoire pour que l'encodage du fichier soit UTF8 (sans BOM)]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

@@ -1,0 +1,129 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>GUI XAML</Title>
+                <Description>Création d&apos;une interface graphique XAML simple</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Add-Type -AssemblyName PresentationFramework
+
+
+$PlainXaml = @"
+<COPIER ICI LE CODE XML ISSU DE VISUAL STUDIO>
+<Attention à ne pas laisser d'espace entre le code et le bord de l'éditeur>
+"@
+
+<#
+Try
+{
+    $XAMLFile = "$PSScriptRoot\Ressources\MainWindow.xaml"
+    $PlainXaml = Get-Content -Path $XAMLFile -ErrorAction Stop
+}
+Catch
+{
+    Write-Error -Message @"
+Erreur d'ouverture du fichier xaml `"$XAMLFile`" : 
+
+$($_.Exception.Message)
+"@
+    Return
+}
+#>
+
+# Remplace les chaines de caractères ajoutées par Visual Studio causant des erreurs avec Powershell
+[xml]$xaml = $PlainXaml -replace 'mc:Ignorable="d"','' -replace 'x:N','N' -replace '^<Win.*', '<Window'
+$reader = New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $xaml
+
+$script:SyncHash = [hashtable]::Synchronized(@{}) # Créé une table de hash synchronisée pour stocker les variables objets
+$script:ScriptBlockHash = [hashtable]::Synchronized(@{}) # Créé une table de hash synchronisée pour stocker les blocs de scripts
+$script:VariableHash = [hashtable]::Synchronized(@{}) # Créé une table de hash synchronisée pour stocker les variables
+$script:CollectionHash = [hashtable]::Synchronized(@{}) # Créé une table de hash synchronisée pour stocker les collections
+#$CollectionHash.ItemList = New-Object -TypeName System.Collections.ObjectModel.ObservableCollection[object] # Contiendra la liste de ...
+
+
+Try
+{
+    $SyncHash.Window = [Windows.Markup.XamlReader]::Load( $reader )
+}
+Catch
+{
+    Write-Error -Message @"
+Erreur au chargement de la fenêtre : 
+
+[$($_.CategoryInfo.Reason)] $($_.Exception.Message)
+"@
+    Return
+}
+
+# Définition de tous les contrôles présents dans la fênetre de la forme $SyncHash.Controle
+$xaml.SelectNodes('//*[@Name]') | ForEach-Object {$script:SyncHash.Add($_.Name, $script:SyncHash.Window.FindName($_.Name))}
+
+
+###################################################### SCRIPTBLOCKS DEFINITION ###########################################################
+$ScriptBlockHash.SB_Cleanup = {
+    # Halt job processing
+    #$jobCleanup.Flag = $False
+
+    # Stop all runspaces
+    #$jobCleanup.PowerShell.Dispose()
+
+    # Suppression des variables créées
+    $xaml.SelectNodes('//*[@Name]') | ForEach-Object {$script:SyncHash.Remove($_.Name)}
+    $xaml.RemoveAll()
+    $reader.Close()
+    $xaml = $null
+    $SyncHash.Window.Close()
+    $SyncHash.Window = $null
+    $SyncHash.Clear()
+    $VariableHash.Clear()
+    $ScriptBlockHash.Clear()
+    $CollectionHash.Clone() | ForEach-Object {$_.Clear()}
+    $CollectionHash.Clear()
+
+    Remove-Variable -Name 'reader','xaml','SyncHash','ScriptBlockHash','CollectionHash','VariableHash' -Force -Verbose -Scope Script -ErrorAction Continue 
+    # Nettoyage de la mémoire
+    [gc]::Collect()
+    [gc]::WaitForPendingFinalizers()
+}
+
+
+##################################################### END ScriptBlock DEFINITION #########################################################
+
+
+
+##################################################### CONTROLS EVENTS DEFINITION #########################################################
+
+
+
+
+################################################### END CONTROLS EVENTS DEFINITION #######################################################
+
+
+# Evenement ouverture de la fenêtre
+$SyncHash.Window.Add_Loaded({
+
+}) # END Ouverture de la fenêtre
+
+
+
+
+# Evenement fermeture de la form
+$SyncHash.Window.Add_Closed($ScriptBlockHash.SB_Cleanup) # END Fermeture de la fenêtre
+
+
+
+# Affichage de la fenêtre
+$null = $SyncHash.Window.ShowDialog()]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

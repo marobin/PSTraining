@@ -1,0 +1,57 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>TÂCHE PLANIFIEE - Création d&apos;une tâche (Windows 10)</Title>
+                <Description>Exemple de création d&apos;une tâche planifiée sous Windows 10</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$TaskName = '' # Nom de la tâche
+$TaskPath = '\' # Chemin de la tâche, '\' correspond à la racine "Bibliothèque du planificateur de tâches"
+$TaskDescription = "Nettoyage du dossier '$env:ALLUSERSPROFILE\AMODIFIER\WaaS\IPU'" # Description de la tâche
+$RunOnceKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce'
+# Bloc de code utilisé par une action
+$SB_Delete = {
+    <#
+    $UpgradeSources = "$env:ALLUSERSPROFILE\AMODIFIER\WaaS\IPU"
+    If ((Test-Path -Path $UpgradeSources))
+    {
+        Do
+        {
+            $Error.Clear()
+            If ((Test-Path -Path $UpgradeSources))
+            {
+                Get-ChildItem -Path $UpgradeSources -File -Recurse | Remove-Item -Force
+                Remove-Item -Path $UpgradeSources -Recurse -Force
+            }
+            Start-Sleep -Seconds 5
+        }While ($Error)
+    }
+    #>
+}
+
+# Définition des actions
+$TaskActionDelFolder = New-ScheduledTaskAction -Execute "$PSHOME\powershell.exe" -Argument "-NoProfile -NoLogo -WindowStyle Hidden -Command `". { $($SB_Delete.ToString()) }`"" 
+$TaskActionRemove = New-ScheduledTaskAction -Execute 'reg.exe' -Argument "ADD `"$RunOnceKey`" /V $($TaskName -replace ' ','_') /T REG_SZ /D `"SCHTASKS.EXE /DELETE /TN $taskPath$($TaskName -replace ' ','_') /F`" /F" -Verbose
+# Définition du compte utilisé pour lancer la tâche. S-1-5-18 correspond au Système
+$TaskPrincipal = New-ScheduledTaskPrincipal -UserId 'S-1-5-18' -RunLevel Highest -Verbose
+# Définition des options de la tâche
+$TaskSetting = New-ScheduledTaskSettingsSet -Compatibility V1 -AllowStartIfOnBatteries -StartWhenAvailable -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew -Verbose
+# Définition du déclencheur de la tâche
+$TaskTrigger = New-ScheduledTaskTrigger -AtStartup -RandomDelay (New-TimeSpan -Minutes 20) -Verbose
+# Définition de la tâche
+$Task = New-ScheduledTask -Action $TaskActionDelFolder,$TaskActionRemove -Description $TaskDescription -Principal $TaskPrincipal -Settings $TaskSetting -Trigger $TaskTrigger -Verbose
+# Enregistrement de la tâche
+Register-ScheduledTask -Force -InputObject $Task -TaskName $($TaskName -replace ' ','_') -TaskPath $taskPath -Verbose]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

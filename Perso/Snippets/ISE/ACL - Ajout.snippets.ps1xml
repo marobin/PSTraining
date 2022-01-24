@@ -1,0 +1,35 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>ACL - Ajout</Title>
+                <Description>Ajout de droits sur un dossier/fichier</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$Path = "C:\Temp"
+$UserName = 'TEST\USERNAME'
+$objACL = Get-Acl -Path $Path
+
+$colRights = [System.Security.AccessControl.FileSystemRights]'Modify','Synchronize'
+$InheritanceFlag = [System.Security.AccessControl.InheritanceFlags]'ContainerInherit','ObjectInherit'
+$PropagationFlag = [System.Security.AccessControl.PropagationFlags]::None 
+$objType = [System.Security.AccessControl.AccessControlType]::Allow 
+
+$objUser = New-Object -TypeName System.Security.Principal.NTAccount -ArgumentList $UserName
+$objACE = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule `
+                     -ArgumentList @($objUser, $colRights, $InheritanceFlag, $PropagationFlag, $objType)
+
+$objAcl.AddAccessRule($objACE)
+Set-Acl -Path $Path -AclObject $objAcl]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

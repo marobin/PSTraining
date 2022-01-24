@@ -1,0 +1,53 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>EXEMPLE - Fichier XML</Title>
+                <Description>Exemple de code pour travailler avec des fichiers XML</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[[xml]$XmlDoc = Get-Content -Path 'C:\CarDocument.xml'
+
+$xCar = $XmlDoc.CreateElement('Car')
+$xCar.SetAttribute('Color', 'Blue')
+$xCar.SetAttribute('Type', 'Truck')
+
+$xCarInterior = $XmlDoc.CreateElement('Interior')
+$xCar.AppendChild($xCarInterior)
+
+$xCarDash = $XmlDoc.CreateElement('Dashboard')
+$xCarDash.InnerText = 'Plastic'
+$xCar.SelectSingleNode('Interior').AppendChild($xCarDash)
+
+$XmlDoc.Document.SelectSingleNode('Cars').AppendChild($xCar)
+$XmlDoc.Save('C:\CarDocument.xml')
+
+
+[xml]$XmlDoc = Get-Content -Path 'C:\CarDocument.xml'
+$NewCarsToAdd = @(
+	@{'Color' = 'Yellow'; 'Type' = 'Truck'; 'Dashboard' = 'Suede'}
+	@{'Color' = 'Green'; 'Type' = 'SUV'; 'Dashboard' = 'Wood'}
+)
+ 
+$xCar = [xml](Get-Content C:\Car.xml)
+foreach ($Car in $NewCarsToAdd) {
+	$xNewCar = $xCar
+	$xNewCar.Car.Color = $Car.Color
+	$xNewCar.Car.Type = $Car.Type
+	$xNewCar.Car.Interior.SelectSingleNode('Dashboard').InnerText = $Car.Dashboard
+	$xNewCar = $XmlDoc.ImportNode($xNewCar.SelectSingleNode('Car'),$true)
+	$XmlDoc.SelectSingleNode('Document').AppendChild($xNewCar)
+	$XmlDoc.Save('C:\CarDocument.xml')
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

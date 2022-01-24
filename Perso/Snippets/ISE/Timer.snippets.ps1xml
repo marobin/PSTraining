@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Timer</Title>
+                <Description>Exemple d&apos;utilisation d&apos;un objet Timer</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$Timer = New-Object -Type Timers.Timer
+
+$Timer.Interval  = 5000 #5 seconds
+
+Register-ObjectEvent -InputObject $Timer  -EventName Elapsed  -SourceIdentifier TimerEvent  -Action {
+
+}
+
+$Timer.Start()
+$Timer.Stop()]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

@@ -1,0 +1,40 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Arrêt des processus</Title>
+                <Description>Permet de tuer des processus avec leurs processus enfants.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[# Kill des processus en mémoire
+$ProcessKillList = @()
+ForEach ($ProcessKill in $ProcessKillList)
+{
+	$ArgumentList = "/im $ProcessKill /T /F"
+	$Return = Invoke-Executable -Command 'taskkill' -Arguments $ArgumentList
+	$ErrNumber = $Return.ExitCode
+	$ErrMsg = $Return.StdErr
+	If ($ErrNumber -eq 128)
+    {
+		# Processus déjà killé ou non présent, cela devait être un enfant.
+		$ErrNumber = 0
+		Write-Log -Message "Processus '$ProcessKill' déjà fermé ou non présent."
+	}
+    Else
+    {
+		Write-Log -Message "Arrêt du processus '$ProcessKill' et de ces enfants."
+	}
+	Start-Sleep -Milliseconds 1000 #Pause afin de voir si cela évite des erreurs 255
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

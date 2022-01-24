@@ -1,0 +1,28 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>Import dll et utilisation d&apos;une fonction de celle-ci</Title>
+                <Description>Exemple d&apos;import de DLL et d&apos;utilisation d&apos;une fonction de celle-ci</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$Signature = @'
+    [DllImport("user32.dll")]
+    public static extern bool IsHungAppWindow (IntPtr hWnd);
+''@
+
+$IsHungAppWindow = Add-Type -MemberDefinition $Signature -Name 'Win32IsHungAppWindow' -Namespace Win32Functions -PassThru
+
+$IsHungAppWindow::IsHungAppWindow((Get-Process -Name 'Test').MainWindowHandle)]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

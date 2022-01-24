@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>GUI - Set-Binding</Title>
+                <Description>Fonction de définition du Binding sur un contrôle dans une interface graphique WPF</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[Function Set-Binding 
+{
+<#
+.SYNOPSIS
+Permet de définir le "Binding" d'un contrôle dans une interface graphique WPF.
+
+.DESCRIPTION
+Permet de définir le "Binding" d'un contrôle dans une interface graphique WPF.
+
+.EXAMPLE
+https://smsagent.wordpress.com/2017/02/03/powershell-deepdive-wpf-data-binding-and-inotifypropertychanged/
+
+.LINK
+https://smsagent.wordpress.com/2017/02/03/powershell-deepdive-wpf-data-binding-and-inotifypropertychanged/
+https://docs.microsoft.com/en-us/dotnet/framework/wpf/data/data-binding-wpf
+#>
+
+
+    Param(
+        [Parameter(Mandatory, Position = 1)]
+        [Object]$Target,
+
+        [Parameter(Mandatory, Position = 2)]
+        [Windows.DependencyProperty]$Property,
+        
+        [Parameter(Mandatory, Position = 3)]
+        [Windows.PropertyPath]$Path,
+        
+        [Parameter(Position = 4)]
+        [Windows.Data.BindingMode]$BindingMode = [Windows.Data.BindingMode]::OneWay,
+        
+        [Parameter(Position = 5)]
+        [Object]$Source
+    )
+ 
+    Add-Type -AssemblyName PresentationFramework
+    $Binding = [Windows.Data.Binding]::new($Path)
+    $Binding.Mode = $BindingMode
+    If ($Source)
+    {
+        $Binding.Source = $Source
+    }
+    $null = [Windows.Data.BindingOperations]::SetBinding($Target,$Property,$Binding)
+ 
+    # Another way to do it...
+    #[void]$Target.SetBinding($Property,$Binding)
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

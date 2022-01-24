@@ -1,0 +1,67 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Récupération du chemin d&apos;installation Oracle</Title>
+                <Description>Récupération du chemin d&apos;&apos;installation Oracle et création de 3 variables Oracle_Home, PathOrax64 (Installation 64 bits) et PathOrax86 (Installation 32 bits)</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[# Récupération du chemin d'installation de Oracle
+$KeyPath = "SOFTWARE\ORACLE"
+Get-ChildItem -Path "HKLM:\$KeyPath" -ErrorAction Ignore | 
+Select-Object -ExpandProperty Name | 
+Split-Path -Leaf |
+ForEach-Object {
+	$strValue = (Get-ItemProperty -Path "HKLM:\$KeyPath\$_" -Name "ORACLE_HOME_NAME" -ErrorAction Ignore).ORACLE_HOME_NAME
+	If (($strValue -eq "OraHome112x64") -or ($strValue -eq 'OraClient12Home1'))
+    {
+		$PathOrax64 = (Get-ItemProperty -Path "HKLM:\$KeyPath\$_" -Name "ORACLE_HOME" -ErrorAction Ignore).ORACLE_HOME
+	}
+    ElseIf ((($strValue -eq "OraHome112x86") -or ($strValue -eq 'OraClient12Home1x86') -or ($strValue -eq 'OraHome112')))
+    {
+        $Oracle_Home = $strValue
+		$PathOrax86 = (Get-ItemProperty -Path "HKLM:\$KeyPath\$_" -Name "ORACLE_HOME" -ErrorAction Ignore).ORACLE_HOME
+	}
+}
+
+If ($BitVersion -eq 64)
+{
+	$KeyPath = "SOFTWARE\Wow6432Node\ORACLE"
+    Get-ChildItem -Path "HKLM:\$KeyPath" -ErrorAction Ignore | 
+    Select-Object -ExpandProperty Name | 
+    Split-Path -Leaf |
+    ForEach-Object {
+	    $strValue = (Get-ItemProperty -Path "HKLM:\$KeyPath\$_" -Name "ORACLE_HOME_NAME" -ErrorAction Ignore).ORACLE_HOME_NAME
+	    If (($strValue -eq "OraHome112x64") -or ($strValue -eq 'OraClient12Home1'))
+        {
+		    $PathOrax64 = (Get-ItemProperty -Path "HKLM:\$KeyPath\$_" -Name "ORACLE_HOME" -ErrorAction Ignore).ORACLE_HOME
+	    }
+        ElseIf ((($strValue -eq "OraHome112x86") -or ($strValue -eq 'OraClient12Home1x86') -or ($strValue -eq 'OraHome112')))
+        {
+            $Oracle_Home = $strValue
+		    $PathOrax86 = (Get-ItemProperty -Path "HKLM:\$KeyPath\$_" -Name "ORACLE_HOME" -ErrorAction Ignore).ORACLE_HOME
+	    }
+    }
+}
+
+If ([String]::IsNullOrWhiteSpace($PathOrax86))
+{
+    $ErrNumber = 69005
+	Write-Log -Message "Path Oracle x86 non détecté..."
+	Return 69005
+}
+
+Write-Log -Message "Oracle_x86 : $PathOrax86"
+Write-Log -Message "Oracle_Home : $Oracle_Home"]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

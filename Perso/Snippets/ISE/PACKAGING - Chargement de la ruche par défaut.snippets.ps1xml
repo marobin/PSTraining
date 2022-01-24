@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>PACKAGING - Chargement de la ruche par défaut</Title>
+                <Description>Chargement de la ruche utilisateur par défaut dans la maquette</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$DefaultUserPath = "$SystemDrive\Users\Default\ntuser.dat"
+$HiveRoot = 'HKEY_USERS\TempDefault'
+
+$null = Invoke-Executable -Command 'reg.exe' -Arguments "load $HiveRoot `"$DefaultUserPath`""
+Write-Log -Message "Chargement de la ruche par défaut"
+
+#$KeyPath = 'Registry::HKEY_USERS\TempDEFAULT\Software'
+
+$null = Invoke-Executable -Command 'reg.exe' -Arguments "unload $HiveRoot"
+Write-Log -Message "Déchargement de la ruche par défaut"]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

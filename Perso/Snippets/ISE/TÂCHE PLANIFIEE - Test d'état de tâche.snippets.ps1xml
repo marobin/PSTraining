@@ -1,0 +1,55 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>TÂCHE PLANIFIEE - Test d&apos;état de tâche</Title>
+                <Description>Exemple de code pour tester l&apos;état d&apos;une tâche planifiée.</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$TaskName = ''
+
+$service = New-Object -ComObject 'Schedule.Service'
+$service.Connect($ComputerName) # Laisser $ComputerName vide pour se connecter à l'ordinateur local
+$rootFolder = $service.GetFolder('\AMODIFIER') # Dossier de tâches
+$TaskExists = $false
+
+$rootFolder.GetTasks($null) | 
+Where-Object {$_.Name -eq $TaskName} | 
+ForEach-Object {
+    $TaskExists = $true
+    # https://msdn.microsoft.com/en-us/library/windows/desktop/aa383617(v=vs.85).aspx
+    switch ($_.State) 
+    {
+        0 {
+            $State = 'Inconnu'
+        }
+
+        1 {
+            $State = 'Désactivée'
+        }
+
+        2 {
+            $State = 'En attente'
+        }
+
+        3 {
+            $State = 'Prêt'
+        }
+
+        4 {
+            $State = 'En cours'
+        }
+    }
+}]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+

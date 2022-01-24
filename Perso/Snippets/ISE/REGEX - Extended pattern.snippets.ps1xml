@@ -1,0 +1,42 @@
+﻿<?xml version='1.0' encoding='utf-8' ?>
+    <Snippets  xmlns='http://schemas.microsoft.com/PowerShell/Snippets'>
+        <Snippet Version='1.0.0'>
+            <Header>
+                <Title>REGEX - Extended pattern</Title>
+                <Description>Exemple d&apos;expression régulière en mode étendu (ne tient pas compte des espaces, tabulations, passage à la ligne, commentaires #)</Description>
+                <Author>Marc-Antoine ROBIN</Author>
+                <SnippetTypes>
+                    <SnippetType>Expansion</SnippetType>
+                </SnippetTypes>
+            </Header>
+
+            <Code>
+                <Script Language='PowerShell' CaretOffset='0'>
+                    <![CDATA[$Line = '127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326'
+
+$Pattern = '(?x)
+    ^                          # Beginning of the line
+    (?<SourceIp>\S+)           # IP address
+    \s                         # field separator
+    \S+                        # identd username (deprecated)
+    \s                         # field separator
+    (?<User>\S+)               # username provided by HTTP auth
+    \s                         # field separator
+    \[(?<Timestamp>[^]]+)\]    # date enclosed in brackets
+    \s                         # field separator
+    (?<Request>".+")           # request enclosed in quotation marks
+    \s                         # field separator
+    (?<Code>\d+)               # HTTP return code
+    \s                         # field separator
+    (?<Size>\d+|-)             # Size of response
+    $                          # End of the line '
+
+$line -match $Pattern
+
+$Matches]]>
+                </Script>
+            </Code>
+
+    </Snippet>
+</Snippets>
+
