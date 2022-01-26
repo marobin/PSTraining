@@ -271,5 +271,5 @@ Get-ChildItem -Path 'C:\Users' | ForEach-Object {"Le profil $($_.Name) a été c
 Get-ChildItem -Path 'C:\Users' | 
     ForEach-Object -Begin {"Lancement du traitement"} -Process {"Le profil $($_.Name) a été créé le $($_.CreationTime)"} -End {"Fin du traitement"}
 
-    Get-ChildItem -Path 'C:\Users' | 
+Get-ChildItem -Path 'C:\Users' | 
     ForEach-Object -Begin {$index = 0} -Process {"Le profil $($_.Name) a été créé le $($_.CreationTime)"; $index++} -End {"Nombre de profils : $index"}

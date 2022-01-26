@@ -221,8 +221,8 @@ $Index = $tab.IndexOf('new') # Index de l'élément 'new'
 $tab.Insert(0,'insert') # Insertion de l'élément 'insert' à la première position
 $tab.Item(0) # Récupération de l'élément à l'index 0
 $tab.Item(0) = 'Modified' # Modification du premier élément
-$tab[0] = 'Modified' # Modification du premier élément
-$tab.Remove('insert') # Suppression de l'élément 'insert'
+$tab[0] = 'Modified2' # Modification du premier élément
+$tab.Remove('new') # Suppression de l'élément 'new'
 $tab.RemoveAt(1) # Suppression du 2ème élément
 $tab.Reverse() # Inversion des éléments, ne renvoie rien
 $tab.Sort() # Tri des éléments, ne renvoie rien
@@ -252,13 +252,20 @@ $Hash['Name'] = 'hash modifié'
     lignes
 #>
 
-#region
+#region Functions
 $var
 
     # commentaire
 
 'texte'
+#endregion Functions
+
+#region Variables
 #endregion
+
+#region main
+
+#endregion main
 
 
 #######################################################################################################################

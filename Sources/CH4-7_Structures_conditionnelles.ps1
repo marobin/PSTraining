@@ -5,7 +5,7 @@ Throw "Les instructions doivent être exécutées en sélectionnant la ligne pui
 ############### Structure If/ElseIf/Else
 Get-Help -Name about_If -ShowWindow
 
-$age = 1
+$age = 15
 If ($age -lt 2) {
     "Ouin..."
 }
@@ -41,14 +41,17 @@ Switch ($age)
 }
 
     # Avec utilisation du mot clé 'break'
-$age = 1
+$age = 60
 Switch ($age)
 {
     {$_ -lt 2} { "Ouin..." ; break}
     {$_ -lt 12} { "Ça grandi vite quand même..." ; break}
     {$_ -lt 16} { "J'veux un scooter!" ; break }
     {($_ -ge 20) -and ($_ -lt 40)} { "$_ ans, quel bel âge!" ; break }
-    40 { "C'est parti pour la crise..." ; break }
+    40 { 
+            "C'est parti pour la crise..."
+            break 
+    }
     Default { "$_ ans, rien à dire..." }
 }
 

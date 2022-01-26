@@ -32,7 +32,6 @@ Get-Help -Name 'about_Arithmetic_Operators' -ShowWindow
 [Math]::Floor(8/3) # arrondi inférieur de 8 divisé par 3
 [Math]::Ceiling(8/3) # arrondi supérieur de 8 divisé par 3
 
-
 ############### Comparaison
 Get-Help -Name 'about_Comparison_Operators' -ShowWindow
     # Test d'égalité
@@ -102,9 +101,13 @@ $b = 21
 
 ############### Redirection (>, >>, 2>&1) 
 Get-Help -Name 'about_Redirection' -ShowWindow
-'Texte' > C:\temp\test.txt # Remplace le contenu existant par 'Texte'
+'toto' > C:\temp\test.txt # Remplace le contenu existant par 'Texte'
+'texte' | Out-File -FilePath C:\temp\test.txt
+
 
 'Ligne 2' >> C:\temp\test.txt # Ajoute 'Ligne 2' au contenu
+Add-Content -Path C:\TEMP\test.txt -Value 'Ligne 2'
+
 
 # Rediriger des flux différents dans un fichier 
 &{
@@ -135,6 +138,43 @@ Get-Help -Name 'about_Type_Operators' -ShowWindow
 (42 -as [String]) -is [string]
 
 ############### Chaine
+
+@"
+Texte 
+    sur
+`tplusieurs
+Lignes`r`navec la variable `"`$var=$var`"
+"@
+
+@'
+Texte 
+    sur
+`tplusieurs
+Lignes`r`navec la variable `"`$var=$var`"
+'@
+
+
+# Méthodes de la classe [String]
+'' | Get-Member -MemberType Methods
+
+"ceci est un test".IndexOf('e')
+"ceci est un test".IndexOf('un')
+"ceci est un test".LastIndexOf('e')
+
+'7'.PadLeft(3,'0')
+'10.'.PadRight(5,'x')
+
+"ceci est un test".Substring(5,3)
+
+"Ceci est un TEST".ToUpper()
+"Ceci est un TEST".ToLower()
+
+"    chaine  ".Trim()
+"Ceci est un test".TrimStart("c") # sensible à la casse
+"Ceci est un test".TrimStart("iecC ts") # sensible à la casse
+"Ceci est un test".TrimEnd("ets") # sensible à la casse
+
+
 # correspondance
     # Utilisation du wildcard * avec -like et -notlike
 'ceci est un test' -like 'ceci*' # 'ceci est un test' commence bien par 'ceci'
@@ -165,25 +205,6 @@ Get-Help -Name 'about_Join' -ShowWindow
 -join @('ceci','est','un','test')
 ('ceci','est','un','test') -join ' | '
 
-# Méthodes de la classe [String]
-'' | Get-Member -MemberType Methods
-
-"ceci est un test".IndexOf('e')
-"ceci est un test".IndexOf('un')
-"ceci est un test".LastIndexOf('e')
-
-'7'.PadLeft(3,'0')
-'10.'.PadRight(5,'x')
-
-"ceci est un test".Substring(5,3)
-
-"Ceci est un TEST".ToUpper()
-"Ceci est un TEST".ToLower()
-
-"    chaine  ".Trim()
-"Ceci est un test".TrimStart("c") # sensible à la casse
-"Ceci est un test".TrimStart("iecC ts") # sensible à la casse
-"Ceci est un test".TrimEnd("ets") # sensible à la casse
 
 
 
@@ -192,12 +213,17 @@ Get-Help -Name 'about_Join' -ShowWindow
 Get-Help about_Special_Characters -ShowWindow
 
 # () => Opérateur de regroupement
-(Get-Item *.txt).Count
+(Get-Item c:\temp\*.txt).Count
 
+Get-ChildItem -Path C:\Users | Select-Object -ExpandProperty Fullname | Out-File -FilePath 'C:\Temp\liste_dossiers.txt'
 Get-ChildItem -Path (Get-Content -Path 'C:\Temp\liste_dossiers.txt')
+
+2 + 3 * 4
+(2 + 3) * 4
 
 # $() => Sous-expression
 "Nous sommes le $(Get-Date)"
+"Nous sommes le $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')"
 "Liste des dossiers : $((Get-ChildItem -Path 'c:\' -Directory).Name -join ', ')"
 
 # @() => tableau
@@ -259,13 +285,14 @@ cd c:\temp
     # accès à un membre
 $Hash.Comment
 $tab.Count
-(Get-Item *.txt).Count
+(Get-Item C:\temp\*.txt).Count
 
 # .. => étendue de nombres entiers
 0..10
 
 $text = 'ceci est un texte'
 1..$text.Length
+0..($text.Length - 1)
 
 # | => pipeline
 Get-Help -Name 'about_pipelines' -ShowWindow
@@ -290,7 +317,7 @@ $tab
     # https://docs.microsoft.com/en-us/dotnet/standard/base-types/composite-formatting
     # {index[,alignement][:format]}
 '0x{0:X}' -f 1234 # Format hexadécimal
-'{0:X2}' -f 2 # Hexadécimal sur 2 caractères
+'{0:X2}' -f 15 # Hexadécimal sur 2 caractères
 "{0} {1,-10} {2:N}" -f 1,"hello",[math]::pi
 
 # :: => membre de classe static

@@ -525,13 +525,13 @@ Get-Command -Verb 'format' -Module 'Microsoft.PowerShell.Utility' | Get-Help -Sh
 
 # Afficher toutes les propriétés d'un objet (une propriété par ligne)
 Get-Service | Select-Object -First 5 | Format-List # équivalent à Select-Object -Property *
-Get-Service | Select-Object -First 5 | Format-List -GroupBy StartType
+Get-Service | Select-Object -First 5 | Format-List -GroupBy Status
 
 # Afficher certaines propriétés d'un objet dans un tableau
 Get-Service | Select-Object -First 5 | Format-Table 
-Get-Service | Select-Object -First 5 | Format-Table -Property Name,StartType,Description,Status,BinaryPathName -AutoSize
-Get-Service | Select-Object -First 5 | Format-Table -Property Name,StartType,Description,Status,BinaryPathName -AutoSize -Wrap
-Get-Service | Select-Object -First 5 | Format-Table -Property Name,StartType,Description,Status -AutoSize -Wrap
+Get-Service | Select-Object -First 5 | Format-Table -Property Name,StartType,DisplayName,Status,BinaryPathName -AutoSize
+Get-Service | Select-Object -First 5 | Format-Table -Property Name,StartType,DisplayName,Status,BinaryPathName -AutoSize -Wrap
+Get-Service | Select-Object -First 5 | Format-Table -Property Name,StartType,DisplayName,Status -AutoSize -Wrap
 
 # Afficher une seule propriété dans une liste prenant la largeur de l'écran
 Get-Service | Select-Object -First 50 | Format-Wide
