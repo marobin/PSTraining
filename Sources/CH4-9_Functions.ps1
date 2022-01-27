@@ -1,5 +1,5 @@
-
-# Différences de scope (étendue)
+ï»¿
+# DiffÃ©rences de scope (Ã©tendue)
     # Exemple 1
 $Counter = 1
 "Ex1-Compte avant : $Counter"
@@ -8,7 +8,7 @@ Function Set-Count {
 }
 
 Set-Count
-"Ex1-Compte après : $Counter"
+"Ex1-Compte aprÃ¨s : $Counter"
 
 
 
@@ -21,7 +21,7 @@ Function Set-Count {
 }
 
 Set-Count
-"Ex2-Compte après : $Counter"
+"Ex2-Compte aprÃ¨s : $Counter"
 
 
 
@@ -36,4 +36,4 @@ Function Set-Count {
 }
 
 Set-Count
-"Ex3-Compte après : $Counter"
+"Ex3-Compte aprÃ¨s : $Counter"

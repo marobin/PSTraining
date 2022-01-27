@@ -6,7 +6,11 @@ $PSVersionTable
 #######################################################################################################################
 #                                                   ISE
 #######################################################################################################################
+
+# https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/ise/exploring-the-windows-powershell-ise?view=powershell-5.1
+
 # Récupérer la liste des raccourcis de l'ISE
+# https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/ise/keyboard-shortcuts-for-the-windows-powershell-ise?view=powershell-5.1
 # A EXÉCUTER DEPUIS L'ISE
 $gps = $psISE.GetType().Assembly
 $rm = New-Object -TypeName System.Resources.ResourceManager -ArgumentList @('GuiStrings',$gps)
@@ -80,3 +84,4 @@ ise $profile.CurrentUserAllHosts # Ouvre le script avec l'ISE
 powershell.exe -NoProfile -File C:\temp\test.ps1
 
 # Plus d'information sur les profils : https://devblogs.microsoft.com/powershell-community/how-to-make-use-of-powershell-profile-files/
+#                                      https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/ise/how-to-use-profiles-in-windows-powershell-ise?view=powershell-5.1
